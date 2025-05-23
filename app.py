@@ -119,9 +119,15 @@ def login(user_login: schemas.UserLogin, db: Session = Depends(get_db)):
 
 @app.post("/etkinlik", response_model=schemas.EtkinlikInDB)
 def create_new_etkinlik(etkinlik: schemas.EtkinlikCreate, db: Session = Depends(get_db)):
-    print(etkinlik)
-    xd = crud.create_etkinlik(db, etkinlik)
-    return xd
+    try:
+       print(etkinlik)
+        xd = crud.create_etkinlik(db, etkinlik)
+        return xd
+except Exception as e:
+    print("Hata:", e)
+    traceback.print_exc()  # stack trace yazdır
+    raise
+
 
 @app.get("/etkinlik/{etkinlik_id}", response_model=schemas.EtkinlikInDB)
 def read_etkinlik(etkinlik_id: int, db: Session = Depends(get_db)):
