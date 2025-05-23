@@ -35,12 +35,6 @@ def get_db():
 def dddd():
     return {"message" : "basarili2"}
 
-/*
-@app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.create_user(db, user)
-    return db_user
-*/
 
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
