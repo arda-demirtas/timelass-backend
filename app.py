@@ -33,7 +33,7 @@ def get_db():
 # Kullanıcı oluştur
 @app.get("/")
 def main():
-    return {"message" : "basarili"}
+    return {"message" : "basarili2"}
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.create_user(db, user)
