@@ -17,6 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 # DB session dependency
+
 def get_db():
     db = SessionLocal()
     try:
@@ -25,6 +26,9 @@ def get_db():
         db.close()
 
 # Kullanıcı oluştur
+@app.get("/")
+def main():
+    return {"message" : "basarili"}
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.create_user(db, user)
