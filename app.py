@@ -8,10 +8,15 @@ from fastapi.middleware.cors import CORSMiddleware
 models.Base.metadata.create_all(bind=engine)
 from datetime import datetime
 
+origins = [
+"*"  # Alternatif local host
+]
+
+
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # React frontend'in URL'si
+    allow_origins=origins,  # React frontend'in URL'si
     allow_credentials=True,
     allow_methods=["*"],  # GET, POST, PUT, DELETE vs. izin ver
     allow_headers=["*"],
