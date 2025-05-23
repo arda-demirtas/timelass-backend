@@ -11,7 +11,7 @@ from datetime import datetime
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],  # React frontend'in URL'si
+    allow_origins=["*"],  # React frontend'in URL'si
     allow_credentials=True,
     allow_methods=["*"],  # GET, POST, PUT, DELETE vs. izin ver
     allow_headers=["*"],
