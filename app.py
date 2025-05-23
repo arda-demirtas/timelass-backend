@@ -32,7 +32,7 @@ def get_db():
 
 # Kullanıcı oluştur
 @app.get("/")
-def main():
+def dddd():
     return {"message" : "basarili2"}
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -119,7 +119,9 @@ def login(user_login: schemas.UserLogin, db: Session = Depends(get_db)):
 
 @app.post("/etkinlik", response_model=schemas.EtkinlikInDB)
 def create_new_etkinlik(etkinlik: schemas.EtkinlikCreate, db: Session = Depends(get_db)):
-    return crud.create_etkinlik(db, etkinlik)
+    print(etkinlik)
+    xd = crud.create_etkinlik(db, etkinlik)
+    return xd
 
 @app.get("/etkinlik/{etkinlik_id}", response_model=schemas.EtkinlikInDB)
 def read_etkinlik(etkinlik_id: int, db: Session = Depends(get_db)):
