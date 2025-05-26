@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, Query
+from fastapi import FastAPI, Depends, HTTPException, Query, File, UploadFile, Form
 from sqlalchemy.orm import Session
 from typing import List
 from sqlalchemy import desc
@@ -12,6 +12,15 @@ origins = [
 "*"  # Alternatif local host
 ]
 
+import cloudinary
+import cloudinary.uploader
+
+# Cloudinary yapılandırması
+cloudinary.config(
+    cloud_name="dnby3fxs6",
+    api_key="422863758826726",
+    api_secret="-E-XGT3Aw3bZAXalZHk3jSiOYls"
+)
 
 app = FastAPI()
 app.add_middleware(
@@ -29,6 +38,78 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+
+#uploadlar
+
+@app.post("/uploadvideo/")
+async def upload_event_video(
+    event_id: int = Form(...),           # Form'dan eventId alıyoruz
+    file: UploadFile = File(...),      # Dosya upload ediyoruz
+    db: Session = Depends(get_db)
+):
+    try:
+        # Cloudinary'ye dosyayı yükle
+        result = cloudinary.uploader.upload(file.file, resource_type="auto")
+
+        url = result["secure_url"]
+        filename = file.filename
+        filetype = filename.split(".")[-1].lower()
+
+        # Veritabanına kaydet (örnek, eventId alanı varsa modele ekle)
+        media_record = models.Video(
+            url=url,
+            etkinlik_id=event_id 
+        )
+        db.add(media_record)
+        db.commit()
+        db.refresh(media_record)
+
+        return {
+            "event_id": event_id,
+            "file": media_record
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+@app.post("/uploadphoto/")
+async def upload_event_photo(
+    event_id: int = Form(...),           # Form'dan eventId alıyoruz
+    file: UploadFile = File(...),      # Dosya upload ediyoruz
+    db: Session = Depends(get_db)
+):
+    try:
+        # Cloudinary'ye dosyayı yükle
+        result = cloudinary.uploader.upload(file.file, resource_type="auto")
+        
+        url = result["secure_url"]
+        print("url : " + url)
+        print("event_id : " + str(event_id))
+        filename = file.filename
+        filetype = filename.split(".")[-1].lower()
+        #print("url : " + url + "  etkinlik_id : " + event_id)
+        # Veritabanına kaydet (örnek, eventId alanı varsa modele ekle)
+        media_record = models.Photo(
+            url=url,
+            etkinlik_id=event_id 
+        )
+        db.add(media_record)
+        db.commit()
+        db.refresh(media_record)
+
+        return {
+            "event_id": event_id,
+            "file": media_record
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+#/uploadlar
 
 # Kullanıcı oluştur
 @app.get("/")
@@ -87,7 +168,6 @@ def get_user_photos_paginated(db: Session, user_id: int, offset: int = 0, limit:
     )
 @app.get("/users/{user_id}/photos", response_model=List[schemas.Photo])
 def get_photos_paginated(
-    user_id: int,
     db: Session = Depends(get_db),
     page: int = Query(0, ge=0),
     limit: int = Query(10, ge=1, le=100),
@@ -95,7 +175,7 @@ def get_photos_paginated(
 ):
     offset = page * limit
     print("OFFSET:", offset)
-    return get_user_photos_paginated(db, user_id, offset=offset, limit=limit)
+    return get_user_photos_paginated(db, offset=offset, limit=limit)
 
 
 @app.get("/users/{user_id}/videos", response_model=List[schemas.Video])

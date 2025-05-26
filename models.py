@@ -10,8 +10,6 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     password = Column(String)
 
-    photos = relationship("Photo", back_populates="owner", cascade="all, delete")
-    videos = relationship("Video", back_populates="owner", cascade="all, delete")
     etkinlikler = relationship("Etkinlik", back_populates="kullanici", cascade="all, delete")
 
 
@@ -36,10 +34,8 @@ class Photo(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     url = Column(String)
-    user_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow)  # yeni alan
     etkinlik_id = Column(Integer, ForeignKey("etkinlikler.id"))
-    owner = relationship("User", back_populates="photos")
     etkinlik = relationship("Etkinlik", back_populates="resimler")
 
 class Video(Base):
@@ -47,8 +43,6 @@ class Video(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     url = Column(String)
-    user_id = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, default=datetime.utcnow) 
     etkinlik_id = Column(Integer, ForeignKey("etkinlikler.id"))
-    owner = relationship("User", back_populates="videos")   
     etkinlik = relationship("Etkinlik", back_populates="videolar")
